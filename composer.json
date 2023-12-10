@@ -1,0 +1,20 @@
+{
+    "name": "krzysztofzylka/date",
+    "description": "Date library",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Krzysztofzylka\\Date\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Krzysztof Żyłka",
+            "email": "krzysztofzylka@yahoo.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    }
+}
