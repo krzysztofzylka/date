@@ -47,7 +47,7 @@ class Date
      * @var ?string
      * @ignore
      */
-    protected ?string $format = 'Y-m-d H:i:s';
+    public static ?string $format = 'Y-m-d H:i:s';
 
     /**
      * Constructor for the class.
@@ -93,7 +93,7 @@ class Date
      */
     public function format(?string $format): Date
     {
-        $this->format = $format;
+        self::$format = $format;
 
         return $this;
     }
@@ -260,11 +260,11 @@ class Date
      * @return string The string representation of the object.
      */
     public function __toString() {
-        if (is_null($this->format)) {
+        if (is_null(self::$format)) {
             return $this->getTime();
         }
 
-        return date($this->format, $this->time);
+        return date(self::$format, $this->time);
     }
 
     /**
