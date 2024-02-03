@@ -50,6 +50,16 @@ class Date
     public static ?string $format = 'Y-m-d H:i:s';
 
     /**
+     * Static constructor
+     * @param mixed $date
+     * @return Date
+     */
+    public static function create(mixed $date): Date
+    {
+        return new Date($date);
+    }
+
+    /**
      * Constructor for the class.
      * @param mixed $date Optional. The initial date value, defaults to null.
      * @return void

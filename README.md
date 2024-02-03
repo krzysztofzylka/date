@@ -18,6 +18,12 @@ $date = new \Krzysztofzylka\Date\Date();
 ```php
 \Krzysztofzylka\Date\Date::getSecondsToDate($seconds)
 ```
+## Create instance
+```php
+\Krzysztofzylka\Date\Date::create(null)
+\Krzysztofzylka\Date\Date::create(time())
+\Krzysztofzylka\Date\Date::create(date('Y-m-d H:i:s'))
+```
 
 # Method
 ## Get time
