@@ -80,12 +80,14 @@ class Date
 
     /**
      * Set the date and time.
-     * @param mixed $date The date and time to set. Accepts a UNIX timestamp, a string in a valid date and time format, or null to set the current date and time.
+     * @param mixed $date The date and time to set. Accepts a UNIX timestamp, a string in a valid date and time format, date instance, or null to set the current date and time.
      * @return Date The updated Date object.
      */
     public function set($date = null): Date
     {
-        if (is_null($date)) {
+        if ($date instanceof Date) {
+            $this->time = $date->getTime();
+        } elseif (is_null($date)) {
             $this->time = time();
         } elseif (is_int($date)) {
             $this->time = $date;

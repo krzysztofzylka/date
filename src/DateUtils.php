@@ -18,12 +18,14 @@ class DateUtils
      *  It first determines the difference in years and months separately, and then combines these
      *  to give the total number of months difference. The result can be positive or negative,
      *  indicating whether the end date is after or before the start date, respectively.
-     * @param string $dateFrom
-     * @param string $dateTo
+     * @param string|Date $dateFrom
+     * @param string|Date $dateTo
      * @return int
      * @throws Exception
      */
-    public static function dateMonthDifference(string $dateFrom, string $dateTo) : int {
+    public static function dateMonthDifference($dateFrom, $dateTo) : int {
+        $dateFrom = $dateFrom instanceof Date ? $dateFrom->getDate('Y-m-d') : $dateFrom;
+        $dateTo = $dateTo instanceof Date ? $dateTo->getDate('Y-m-d') : $dateTo;
         $dateFrom = new DateTime($dateFrom);
         $dateTo = new DateTime($dateTo);
         $yearsDiff = $dateTo->format('Y') - $dateFrom->format('Y');
