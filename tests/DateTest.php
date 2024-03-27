@@ -58,4 +58,12 @@ class DateTest extends TestCase
         $this->assertEquals($date->getDate('Y-m-d'), '2024-04-30');
     }
 
+    public function testAddYear()
+    {
+        $date = Date::create('2024-03-31');
+        $date->addYear(1);
+        $expectedDate = '2025-03-31';
+        $this->assertEquals($expectedDate, $date->getDate('Y-m-d'), "Adding days does not result in the expected date.");
+    }
+
 }
