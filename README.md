@@ -62,7 +62,17 @@ $date->addDay($days)
 ```
 ## Add month to date
 ```php
-$date->addMonth($months)
+$date->addMonth($months, $fixCalculate)
+```
+### Example
+```php
+$date = new \Krzysztofzylka\Date\Date('2024-03-31');
+$date->addMonth(1);
+echo $date->getDate('Y-m-d'); //2024-04-30
+
+$date = new \Krzysztofzylka\Date\Date('2024-03-31', false);
+$date->addMonth(1);
+echo $date->getDate('Y-m-d'); //2024-05-01
 ```
 ## Add year to date
 ```php
@@ -91,4 +101,10 @@ $date->subMonth($months)
 ## Subtract year from date
 ```php
 $date->subYear($years)
+```
+
+# Utils
+## Get date month difference
+```php
+\Krzysztofzylka\Date\DateUtils::dateMonthDifference($dateFrom, $dateTo)
 ```

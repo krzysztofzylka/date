@@ -3,10 +3,10 @@
 namespace Krzysztofzylka\Date;
 
 use DateTime;
+use Exception;
 
 /**
  * Operating on date
- * @package Biblioteki
  */
 class Date
 {
@@ -54,7 +54,7 @@ class Date
      * @param mixed $date
      * @return Date
      */
-    public static function create(mixed $date): Date
+    public static function create($date): Date
     {
         return new Date($date);
     }
@@ -64,7 +64,7 @@ class Date
      * @param mixed $date Optional. The initial date value, defaults to null.
      * @return void
      */
-    public function __construct(mixed $date = null)
+    public function __construct($date = null)
     {
         $this->set($date);
     }
@@ -83,7 +83,7 @@ class Date
      * @param mixed $date The date and time to set. Accepts a UNIX timestamp, a string in a valid date and time format, or null to set the current date and time.
      * @return Date The updated Date object.
      */
-    public function set(mixed $date = null): Date
+    public function set($date = null): Date
     {
         if (is_null($date)) {
             $this->time = time();
@@ -159,11 +159,23 @@ class Date
     /**
      * Add months to the date
      * @param int $months The number of months to add to the date
+     * @param bool $fixCalculate
      * @return Date The updated date object
+     * @throws Exception
      */
-    public function addMonth(int $months): Date
+    public function addMonth(int $months, bool $fixCalculate = true): Date
     {
-        $this->time = strtotime('+' . $months . ' MONTHS', $this->time);
+        if ($fixCalculate) {
+            $previousDate = $this->time;
+            $this->time = strtotime('+' . $months . ' MONTHS', $this->time);
+            $monthDifference = DateUtils::dateMonthDifference(date('Y-m-d', $previousDate), date('Y-m-d', $this->time));
+
+            if ($monthDifference > $months) {
+                $this->time = strtotime(date('Y-m-t H:i:s.u', strtotime('previous month', $this->time)));
+            }
+        } else {
+            $this->time = strtotime('+' . $months . ' MONTHS', $this->time);
+        }
 
         return $this;
     }
@@ -256,11 +268,16 @@ class Date
      * Get date
      * This method returns the date in either integer or string format. By default, it uses the format 'Y-m-d H:i:s'.
      * If the format is null, it returns the date as a string using the getTime method of the class.
+     * @param string|null $format
      * @return int|string The date in the specified format. If the format is null, it returns the date as a string.
      */
-    public function getDate(): int|string
+    public function getDate(?string $format = null)
     {
-        return $this->__toString();
+        if (is_null(self::$format)) {
+            return $this->getTime();
+        }
+
+        return date($format ?? self::$format, $this->time);
     }
 
     /**
@@ -305,7 +322,7 @@ class Date
      * a Unix timestamp or a string that can be parsed with the strtotime() function.
      * @return int The number of seconds between the current time and the given date.
      */
-    public static function getSecondsToDate(string|int $date) : int {
+    public static function getSecondsToDate($date) : int {
         return round(abs(time() - (is_int($date) ? $date : strtotime($date))));
     }
 
