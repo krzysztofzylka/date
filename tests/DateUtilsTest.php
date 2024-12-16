@@ -77,4 +77,35 @@ class DateUtilsTest extends TestCase
         $this->expectException(Exception::class);
         DateUtils::dateMonthDifference('invalid-date', '2020-01-01');
     }
+
+    public function testGetSimpleDateWithoutMicroseconds()
+    {
+        $date = DateUtils::getSimpleDate(false);
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $date, 'The date format without microseconds does not match');
+    }
+
+    public function testGetSimpleDateWithMicroseconds()
+    {
+        $dateWithMicroseconds = DateUtils::getSimpleDate(true);
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}$/', $dateWithMicroseconds, 'The date format with microseconds does not match');
+    }
+
+    public function testGetDifference()
+    {
+        $date = \Krzysztofzylka\Date\Date::create();
+        $date2 = \Krzysztofzylka\Date\Date::create($date)->addDay(1);
+        $this->assertEquals(DateUtils::getDifference($date, $date2), ['years' => 0, 'months' => 0, 'days' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0]);
+        $date2->addDay(1);
+        $this->assertEquals(DateUtils::getDifference($date, $date2), ['years' => 0, 'months' => 0, 'days' => 2, 'hours' => 0, 'minutes' => 0, 'seconds' => 0]);
+        $date2->addMonth(5);
+        $this->assertEquals(DateUtils::getDifference($date, $date2), ['years' => 0, 'months' => 5, 'days' => 2, 'hours' => 0, 'minutes' => 0, 'seconds' => 0]);
+        $date2->addYear(8);
+        $this->assertEquals(DateUtils::getDifference($date, $date2), ['years' => 8, 'months' => 5, 'days' => 2, 'hours' => 0, 'minutes' => 0, 'seconds' => 0]);
+        $date2->addMinute(5);
+        $date2->addSecond(155);
+        $this->assertEquals(DateUtils::getDifference($date, $date2), ['years' => 8, 'months' => 5, 'days' => 2, 'hours' => 0, 'minutes' => 7, 'seconds' => 35]);
+        $date2->addMonth(129);
+        $this->assertEquals(DateUtils::getDifference($date, $date2), ['years' => 19, 'months' => 2, 'days' => 2, 'hours' => 0, 'minutes' => 7, 'seconds' => 35]);
+    }
+
 }

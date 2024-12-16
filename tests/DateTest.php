@@ -5,6 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class DateTest extends TestCase
 {
+
     public function testStaticVariables()
     {
         $this->assertEquals(2592000, Date::$MONTH, 'Month in seconds does not match');
@@ -13,16 +14,12 @@ class DateTest extends TestCase
         $this->assertEquals(60, Date::$MINUTE, 'Minute in seconds does not match');
     }
 
-    public function testGetSimpleDateWithoutMicroseconds()
+    public function testCreate()
     {
-        $date = Date::getSimpleDate(false);
-        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $date, 'The date format without microseconds does not match');
-    }
+        $datetime = new DateTime();
+        $date = Date::create($datetime);
 
-    public function testGetSimpleDateWithMicroseconds()
-    {
-        $dateWithMicroseconds = Date::getSimpleDate(true);
-        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}$/', $dateWithMicroseconds, 'The date format with microseconds does not match');
+        $this->assertEquals($datetime->getTimestamp(), $date->getTime());
     }
 
     public function testGetTimeReturnsCorrectTimestamp()
@@ -64,6 +61,55 @@ class DateTest extends TestCase
         $date->addYear(1);
         $expectedDate = '2025-03-31';
         $this->assertEquals($expectedDate, $date->getDate('Y-m-d'), "Adding days does not result in the expected date.");
+    }
+
+    public function testGetDifference()
+    {
+        $date = \Krzysztofzylka\Date\Date::create();
+        $date2 = \Krzysztofzylka\Date\Date::create($date)->addDay(1);
+        $this->assertEquals($date->getDifference($date2), ['years' => 0, 'months' => 0, 'days' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0]);
+        $date2->addDay(1);
+        $this->assertEquals($date->getDifference($date2), ['years' => 0, 'months' => 0, 'days' => 2, 'hours' => 0, 'minutes' => 0, 'seconds' => 0]);
+        $date2->addMonth(5);
+        $this->assertEquals($date->getDifference($date2), ['years' => 0, 'months' => 5, 'days' => 2, 'hours' => 0, 'minutes' => 0, 'seconds' => 0]);
+        $date2->addYear(8);
+        $this->assertEquals($date->getDifference($date2), ['years' => 8, 'months' => 5, 'days' => 2, 'hours' => 0, 'minutes' => 0, 'seconds' => 0]);
+        $date2->addMinute(5);
+        $date2->addSecond(155);
+        $this->assertEquals($date->getDifference($date2), ['years' => 8, 'months' => 5, 'days' => 2, 'hours' => 0, 'minutes' => 7, 'seconds' => 35]);
+        $date2->addMonth(129);
+        $this->assertEquals($date->getDifference($date2), ['years' => 19, 'months' => 2, 'days' => 2, 'hours' => 0, 'minutes' => 7, 'seconds' => 35]);
+    }
+
+    public function testIsBefore()
+    {
+        $this->assertTrue(Date::create()->isBefore(Date::create()->addDay(2)));
+        $this->assertFalse(Date::create()->isBefore(Date::create()->subDay(2)));
+        $this->assertFalse(Date::create()->isBefore(Date::create()));
+    }
+
+    public function testIsAfter()
+    {
+        $this->assertFalse(Date::create()->isAfter(Date::create()->addDay(2)));
+        $this->assertTrue(Date::create()->isAfter(Date::create()->subDay(2)));
+        $this->assertFalse(Date::create()->isAfter(Date::create()));
+    }
+
+    public function testIsEqual()
+    {
+        $this->assertFalse(Date::create()->isEqual(Date::create()->addDay(2)));
+        $this->assertFalse(Date::create()->isEqual(Date::create()->subDay(2)));
+        $this->assertTrue(Date::create()->isEqual(Date::create()));
+    }
+
+    public function testStartDayOf()
+    {
+        $this->assertEquals(Date::create()->startOfDay(), date('Y-m-d 00:00:00'));
+    }
+
+    public function testEndOfDay()
+    {
+        $this->assertEquals(Date::create()->endOfDay(), date('Y-m-d 23:59:59'));
     }
 
 }

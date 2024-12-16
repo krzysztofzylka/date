@@ -54,7 +54,7 @@ class Date
      * @param mixed $date
      * @return Date
      */
-    public static function create($date): Date
+    public static function create($date = null): Date
     {
         return new Date($date);
     }
@@ -80,8 +80,14 @@ class Date
 
     /**
      * Set the date and time.
-     * @param mixed $date The date and time to set. Accepts a UNIX timestamp, a string in a valid date and time format, date instance, or null to set the current date and time.
+     * @param int|string|DateTime|Date|null $date The date and time to set.
+     *                                            - int: A UNIX timestamp.
+     *                                            - string: A string in a valid date and time format (e.g., 'Y-m-d H:i:s').
+     *                                            - DateTime: An instance of the DateTime class.
+     *                                            - Date: An instance of the Date class (custom implementation).
+     *                                            - null: Sets the current date and time.
      * @return Date The updated Date object.
+     * @throws Exception If the provided date is invalid or cannot be parsed.
      */
     public function set($date = null): Date
     {
@@ -91,6 +97,8 @@ class Date
             $this->time = time();
         } elseif (is_int($date)) {
             $this->time = $date;
+        } elseif ($date instanceof DateTime) {
+            $this->time = $date->getTimestamp();
         } else {
             $this->time = strtotime($date);
         }
@@ -283,6 +291,125 @@ class Date
     }
 
     /**
+     * Get the difference between the current date and another date.
+     * @param Date|string|DateTime|int|null $date The date to compare. Accepts various formats (Date, DateTime, string, UNIX timestamp, or null).
+     * @return array An array containing the difference in years, months, days, hours, minutes, and seconds.
+     * @throws Exception If the provided date is invalid.
+     */
+    public function getDifference($date): array
+    {
+        return DateUtils::getDifference($this, $date);
+    }
+
+    /**
+     * Check if the current date is before another date.
+     *
+     * @param Date|string|DateTime|int|null $date The date to compare.
+     * @return bool True if the current date is before the given date.
+     * @throws Exception If the provided date is invalid.
+     */
+    public function isBefore($date): bool
+    {
+        return $this->getTime() < Date::create($date)->getTime();
+    }
+
+    /**
+     * Check if the current date is after another date.
+     *
+     * @param Date|string|DateTime|int|null $date The date to compare.
+     * @return bool True if the current date is after the given date.
+     * @throws Exception If the provided date is invalid.
+     */
+    public function isAfter($date): bool
+    {
+        return $this->time > Date::create($date)->getTime();
+    }
+
+    /**
+     * Set the time to the start of the day (00:00:00).
+     * @return Date The updated Date object.
+     */
+    public function startOfDay(): Date
+    {
+        $this->time = strtotime(date('Y-m-d 00:00:00', $this->time));
+
+        return $this;
+    }
+
+    /**
+     * Set the time to the end of the day (23:59:59).
+     * @return Date The updated Date object.
+     */
+    public function endOfDay(): Date
+    {
+        $this->time = strtotime(date('Y-m-d 23:59:59', $this->time));
+
+        return $this;
+    }
+
+    /**
+     * Check if the current date is equal to another date.
+     * @param Date|string|DateTime|int|null $date The date to compare.
+     * @return bool True if the dates are equal, false otherwise.
+     * @throws Exception If the provided date is invalid.
+     */
+    public function isEqual($date): bool
+    {
+        return $this->getTime() === Date::create($date)->getTime();
+    }
+
+    /**
+     * Get the date in ISO 8601 format.
+     * @return string The date in ISO 8601 format.
+     */
+    public function getISO8601(): string
+    {
+        return date('c', $this->time);
+    }
+
+    /**
+     * Check if the date is a weekend.
+     * @return bool True if the date is a weekend, false otherwise.
+     */
+    public function isWeekend(): bool
+    {
+        $dayOfWeek = (int)date('N', $this->time); // 6 = Saturday, 7 = Sunday
+
+        return $dayOfWeek >= 6;
+    }
+
+    /**
+     * Check if the date is a weekday.
+     * @return bool True if the date is a weekday, false otherwise.
+     */
+    public function isWeekday(): bool
+    {
+        return !$this->isWeekend();
+    }
+
+    /**
+     * Get the number of weekdays between the current date and another date.
+     * @param Date|string|DateTime|int|null $date The date to compare.
+     * @return int The number of weekdays between the two dates.
+     * @throws Exception If the provided date is invalid.
+     */
+    public function getWeekdayDifference($date): int
+    {
+        $start = min($this->time, Date::create($date)->getTime());
+        $end = max($this->time, Date::create($date)->getTime());
+
+        $days = 0;
+        for ($current = $start; $current <= $end; $current += self::$DAY) {
+            $dayOfWeek = (int)date('N', $current);
+            if ($dayOfWeek < 6) { // Monday to Friday
+                $days++;
+            }
+        }
+
+        return $days;
+    }
+
+    /**
      * Returns a string representation of the object.
      * Converts the Time object to a string based on the defined format. If the format is not set,
      * it returns the result of the getTime() method.
@@ -294,38 +421,6 @@ class Date
         }
 
         return date(self::$format, $this->time);
-    }
-
-    /**
-     * Returns a string representation of the current date and time.
-     * If the $microTime parameter is set to true, the method returns the current date and time
-     * in microseconds. Otherwise, it returns the current date and time without microseconds.
-     * @param bool $microTime (optional) Set to true to include microseconds in the result.
-     * @return string The string representation of the current date and time.
-     *     If $microTime is true, the format is 'Y-m-d H:i:s.u', otherwise 'Y-m-d H:i:s'.
-     */
-    public static function getSimpleDate(bool $microTime = false) : string {
-        if ($microTime) {
-            return DateTime::createFromFormat(
-                'U.u',
-                sprintf('%.f', microtime(true))
-            )->format('Y-m-d H:i:s.u');
-        }
-
-        return date('Y-m-d H:i:s');
-    }
-
-    /**
-     * Returns the number of seconds between the current time and the given date.
-     * If the provided date is a Unix timestamp (integer), it calculates the difference between
-     * the current time and the specified timestamp. If the provided date is a string, it converts
-     * the string to a Unix timestamp using the strtotime() function and then calculates the difference.
-     * @param string|int $date The date for which to calculate the time difference. It can be either
-     * a Unix timestamp or a string that can be parsed with the strtotime() function.
-     * @return int The number of seconds between the current time and the given date.
-     */
-    public static function getSecondsToDate($date) : int {
-        return round(abs(time() - (is_int($date) ? $date : strtotime($date))));
     }
 
 }
