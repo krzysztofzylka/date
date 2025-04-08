@@ -326,6 +326,33 @@ class Date
     }
 
     /**
+     * Get the day of the month
+     * @return int The day of the month (1-31)
+     */
+    public function getDay(): int
+    {
+        return (int)date('d', $this->time);
+    }
+
+    /**
+     * Get the month
+     * @return int The month (1-12)
+     */
+    public function getMonth(): int
+    {
+        return (int)date('m', $this->time);
+    }
+
+    /**
+     * Get the year
+     * @return int The year (e.g. 2024)
+     */
+    public function getYear(): int
+    {
+        return (int)date('Y', $this->time);
+    }
+
+    /**
      * Check if the current date is before another date.
      *
      * @param Date|string|DateTime|int|null $date The date to compare.

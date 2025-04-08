@@ -23,9 +23,21 @@ $date = new \Krzysztofzylka\Date\Date();
 ```php
 $date->getTime()
 ```
-#3# Get date
+### Get date
 ```php
 $date->getDate()
+```
+### Get day
+```php
+$date->getDay()
+```
+### Get month
+```php
+$date->getMonth()
+```
+### Get year
+```php
+$date->getYear()
 ```
 ### Get ISO8601 date format
 ```php
