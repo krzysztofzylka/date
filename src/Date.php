@@ -62,7 +62,7 @@ class Date
     /**
      * Constructor for the class.
      * @param mixed $date Optional. The initial date value, defaults to null.
-     * @return void
+     * @throws Exception
      */
     public function __construct($date = null)
     {
@@ -167,6 +167,18 @@ class Date
     }
 
     /**
+     * Add weeks to the date
+     * @param int $weeks The number of weeks to add
+     * @return Date Returns the updated Date object
+     */
+    public function addWeek(int $weeks): Date
+    {
+        $this->time = strtotime('+' . $weeks . ' WEEKS', $this->time);
+
+        return $this;
+    }
+
+    /**
      * Add months to the date
      * @param int $months The number of months to add to the date
      * @param bool $fixCalculate
@@ -246,6 +258,18 @@ class Date
     public function subDay(int $days): Date
     {
         $this->time = strtotime('-' . $days . ' DAYS', $this->time);
+
+        return $this;
+    }
+
+    /**
+     * Subtract weeks from the date
+     * @param int $weeks The number of weeks to subtract
+     * @return Date Returns the updated Date object
+     */
+    public function subWeek(int $weeks): Date
+    {
+        $this->time = strtotime('-' . $weeks . ' WEEKS', $this->time);
 
         return $this;
     }

@@ -73,6 +73,10 @@ $date->addHour($hours)
 ```php
 $date->addDay($days)
 ```
+### Add weeks to date
+```php
+$date->addWeek($weeks)
+```
 ### Add month to date
 ```php
 $date->addMonth($months, $fixCalculate)
@@ -108,6 +112,10 @@ $date->subHour($hours)
 ### Subtract day from date
 ```php
 $date->subDay($days)
+```
+### Subtract weeks from date
+```php
+$date->subWeek($weeks)
 ```
 ### Subtract month from date
 ```php
