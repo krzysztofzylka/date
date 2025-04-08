@@ -167,6 +167,10 @@ $date->isWeekend()
 ```php
 $date->isWeekday()
 ```
+### is leap year
+```php
+$date->isLeapYear()
+```
 
 # Utils
 ## Get date month difference

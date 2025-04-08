@@ -430,6 +430,17 @@ class Date
     }
 
     /**
+     * Check if the year is a leap year.
+     * @return bool True if the year is a leap year, false otherwise.
+     */
+    public function isLeapYear(): bool
+    {
+        $year = (int)date('Y', $this->time);
+
+        return (($year % 4 === 0) && ($year % 100 !== 0)) || ($year % 400 === 0);
+    }
+
+    /**
      * Check if the date is a weekday.
      * @return bool True if the date is a weekday, false otherwise.
      */
