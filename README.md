@@ -192,3 +192,78 @@ $date = \Krzysztofzylka\Date\Date::create();
 $date2 = \Krzysztofzylka\Date\Date::create($date)->addDay(1);
 var_dump(\Krzysztofzylka\Date\DateUtils::getDifference($date, $date2)); //['years' => 0, 'months' => 0, 'days' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0]
 ```
+
+# Polish Locale
+Klasa `PolishLocale` zawiera polskie nazwy miesięcy i dni tygodnia w różnych formatach.
+
+## Stałe
+### Miesiące
+```php
+use Krzysztofzylka\Date\Locale\PolishLocale;
+
+// Skrócone nazwy miesięcy
+PolishLocale::MONTHS_SHORT; // [1 => 'Sty', 2 => 'Lut', ...]
+
+// Pełne nazwy miesięcy
+PolishLocale::MONTHS_LONG; // [1 => 'Styczeń', 2 => 'Luty', ...]
+```
+
+### Dni tygodnia (Niedziela = 0)
+```php
+// Skrócone nazwy dni (0=Sobota, 1=Niedziela, 2=Poniedziałek, ...)
+PolishLocale::WEEKDAYS_SHORT; // [2 => 'Pon', 3 => 'Wto', ...]
+
+// Pełne nazwy dni (0=Sobota, 1=Niedziela, 2=Poniedziałek, ...)
+PolishLocale::WEEKDAYS_LONG; // [2 => 'Poniedziałek', 3 => 'Wtorek', ...]
+```
+
+### Dni tygodnia (Poniedziałek = 0)
+```php
+// Skrócone nazwy dni (0=Poniedziałek, 1=Wtorek, ...)
+PolishLocale::WEEKDAYS_SHORT_MONDAY_ZERO; // [0 => 'Pon', 1 => 'Wto', ...]
+
+// Pełne nazwy dni (0=Poniedziałek, 1=Wtorek, ...)
+PolishLocale::WEEKDAYS_LONG_MONDAY_ZERO; // [0 => 'Poniedziałek', 1 => 'Wtorek', ...]
+```
+
+## Metody
+### Pobieranie nazwy miesiąca
+```php
+use Krzysztofzylka\Date\Locale\PolishLocale;
+
+echo PolishLocale::getMonthName(1); // "Styczeń"
+echo PolishLocale::getMonthName(1, true); // "Sty"
+```
+
+### Pobieranie nazwy dnia (Niedziela = 0)
+```php
+echo PolishLocale::getDayName(1); // "Niedziela"
+echo PolishLocale::getDayName(2, true); // "Pon"
+```
+
+### Pobieranie nazwy dnia (Poniedziałek = 0)
+```php
+echo PolishLocale::getDayNameMondayZero(0); // "Poniedziałek"
+echo PolishLocale::getDayNameMondayZero(0, true); // "Pon"
+```
+
+### Konwersja między konwencjami numerowania
+```php
+// Z Niedziela=0 na Poniedziałek=0
+$mondayZero = PolishLocale::convertSundayZeroToMondayZero(1); // 0 (Poniedziałek)
+
+// Z Poniedziałek=0 na Niedziela=0
+$sundayZero = PolishLocale::convertMondayZeroToSundayZero(0); // 1 (Poniedziałek)
+```
+
+## Przykład użycia
+```php
+use Krzysztofzylka\Date\Date;
+use Krzysztofzylka\Date\Locale\PolishLocale;
+
+$date = Date::create('2024-03-15'); // Piątek
+$dayOfWeek = (int)$date->getDate('w'); // 5 (Piątek w konwencji Niedziela=0)
+
+echo PolishLocale::getDayName($dayOfWeek); // "Piątek"
+echo PolishLocale::getMonthName($date->getMonth()); // "Marzec"
+```
